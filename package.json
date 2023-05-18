@@ -1,15 +1,23 @@
-{ 
-  "name": "homecentr-$$IMAGE_NAME$$",
+{
+  "name": "homecentr-github-runner",
   "version": "1.0.0",
   "description": "",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/homecentr/docker-$$IMAGE_NAME$$.git"
+    "url": "git+https://github.com/homecentr/docker-github-runner.git"
   },
   "author": "",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/homecentr/docker-$$IMAGE_NAME$$/issues"
+    "url": "https://github.com/homecentr/docker-github-runner/issues"
   },
-  "homepage": "https://github.com/homecentr/docker-$$IMAGE_NAME$$#readme"
+  "homepage": "https://github.com/homecentr/docker-github-runner#readme",
+  "release": {
+    "branch": "master",
+    "plugins": [
+      "@semantic-release/commit-analyzer",
+      "@semantic-release/release-notes-generator",
+      "@semantic-release/github",
+    ],
+  }
 }
