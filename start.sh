@@ -2,9 +2,9 @@
 
 GH_OWNER=$GH_OWNER
 GH_TOKEN=$GH_TOKEN
-RUNNER_NAME=$RUNNER_NAME
 
-RUNNER_SUFFIX=$(cat /dev/urandom | tr -dc 'a-z0-9' | fold -w 5 | head -n 1)
+CONTAINER_ID=$(head -1 /proc/self/cgroup | cut -d/ -f3 | cut -c1-5)
+RUNNER_NAME="$RUNNER_NAME ($CONTAINER_ID)"
 
 echo "Connecting to GitHub org: $GH_OWNER"
 echo "Runner name: $RUNNER_NAME"

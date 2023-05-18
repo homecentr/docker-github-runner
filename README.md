@@ -7,16 +7,6 @@
 
 # Homecentr - github-runner
 
-## Usage
-
-```yml
-version: "3.7"
-services:
-  github-runner:
-    build: .
-    image: homecentr/github-runner
-```
-
 ## Environment variables
 
 | Name | Default value | Description |
@@ -26,15 +16,11 @@ services:
 
 ## Exposed ports
 
-| Port | Protocol | Description |
-|------|------|-------------|
-| 80 | TCP | Some useful details |
+None
 
 ## Volumes
 
-| Container path | Description |
-|------------|---------------|
-| /config | Some useful details |
+None
 
 ## Security
 The container is regularly scanned for vulnerabilities and updated. Further info can be found in the [Security tab](https://github.com/homecentr/docker-github-runner/security).
