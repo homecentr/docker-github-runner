@@ -1,0 +1,74 @@
+name: CI/CD on master
+on:
+  push:
+    branches:
+      - master
+
+env:
+  IMAGE_NAME: "homecentr/$$IMAGE_NAME$$"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # To add version tags
+      packages: write # To push docker image
+    steps:
+      - uses: actions/checkout@master
+
+      - name: "Determine release version"
+        uses: docker://ghcr.io/codfish/semantic-release-action:v1.9.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Verify Dockerfile with Hadolint
+        uses: brpaz/hadolint-action@master
+
+      - name: "Build Docker image"
+        if: env.RELEASE_VERSION != ''
+        run: |
+          docker build . \
+              --tag "$IMAGE_NAME:$RELEASE_VERSION" \
+              --tag "$IMAGE_NAME:latest" \
+              --tag "ghcr.io/$IMAGE_NAME:$RELEASE_VERSION" \
+              --tag "ghcr.io/$IMAGE_NAME:latest" \
+              --label "org.label-schema.schema-version=1.0" \
+              --label "org.label-schema.vcs-ref=${GITHUB_SHA}" \
+              --label "org.label-schema.vcs-url=https://github.com/${GITHUB_REPOSITORY}" \
+              --label "org.label-schema.url=https://github.com/${GITHUB_REPOSITORY}" \
+              --label "org.label-schema.vendor=Homecentr" \
+              --label "version=$RELEASE_VERSION" \
+              --label "org.label-schema.build-date=$(date '+%F %T')"
+
+      - name: Test Docker image
+        if: env.RELEASE_VERSION != ''
+        run: cd tests && sudo --preserve-env gradle test -Ddocker_image_tag=${{ env.IMAGE_NAME }}:${{ env.RELEASE_VERSION }}
+        env: # To allow downloading packages
+          GITHUB_USERNAME: ${{ github.actor }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+       
+      # Docker Hub
+      - name: "Log into Docker Hub"
+        if: env.RELEASE_VERSION != ''
+        run: "echo ${{ secrets.DOCKERHUB_PASSWORD }} | docker login --username ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin"
+
+      - name: "Push to DockerHub"
+        if: env.RELEASE_VERSION != ''
+        run: "docker push $IMAGE_NAME:$RELEASE_VERSION && docker push $IMAGE_NAME:latest"
+
+      - name: "Update Docker Hub description"
+        if: env.RELEASE_VERSION != ''
+        uses: peter-evans/dockerhub-description@v2.4.3
+        env:
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
+          DOCKERHUB_REPOSITORY: ${{ env.IMAGE_NAME }}
+
+      # GitHub Packages
+      - name: "Log into GitHub Packages"
+        if: env.RELEASE_VERSION != ''
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+      - name: "Push to GitHub Packages"
+        if: env.RELEASE_VERSION != ''
+        run: "docker push ghcr.io/$IMAGE_NAME:$RELEASE_VERSION && docker push ghcr.io/$IMAGE_NAME:latest"
