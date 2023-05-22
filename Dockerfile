@@ -11,6 +11,8 @@ WORKDIR /var/lib/github-runner
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
       python3-pip=20.3.4-4+deb11u1 && \
+    # Install dig
+    apt-get install -y bind-utils && \
     # Install SOPS
     wget -q -O /usr/bin/sops https://github.com/mozilla/sops/releases/download/v3.7.3/sops-v3.7.3.linux.amd64 && \
     chmod a+x /usr/bin/sops && \
