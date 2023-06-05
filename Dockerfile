@@ -18,7 +18,10 @@ RUN apt-get update && \
     # Install Ansible & Ansible lint
     python3 -m pip install --no-cache-dir \
       ansible==7.5.0 \
-      ansible-lint==6.16.1 && \
+      ansible-lint==6.16.1 \
+      # Required to apply playbooks
+      netaddr==0.8.0 \
+      stormssh==0.7.0 && \
     # Install GitHub runner
     useradd -m github-runner && \
     apt-get install -y --no-install-recommends \
