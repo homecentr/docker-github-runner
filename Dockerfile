@@ -6,7 +6,9 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 COPY start.sh /var/lib/github-runner/start.sh
 
-WORKDIR /var/lib/github-runner
+RUN mkdir /var/lib/github-runner/_template
+
+WORKDIR /var/lib/github-runner/_template
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
@@ -31,11 +33,8 @@ RUN apt-get update && \
     tar xzf ./runner.tar.gz && \
     rm runner.tar.gz && \
     chown -R github-runner /var/lib/github-runner && \
-    /var/lib/github-runner/bin/installdependencies.sh && \
+    /var/lib/github-runner/_template/bin/installdependencies.sh && \
     chmod a+x /var/lib/github-runner/start.sh && \
-    # Create directory for runner root dirs
-    mkdir /var/lib/github-runner-instance && \
-    chown -R github-runner /var/lib/github-runner-instance && \
     # Install Docker CLI
     apt-get install -y --no-install-recommends \
       ca-certificates=20210119 \
