@@ -6,12 +6,13 @@ GH_TOKEN=$GH_TOKEN
 export CONTAINER_ID=$(cat /proc/self/mountinfo | grep "/docker/containers/" | head -1 | awk '{print $4}' | sed 's/\/var\/lib\/docker\/containers\///g' | sed 's/\/resolv.conf//g' | cut -c1-5)
 export RUNNER_NAME="${RUNNER_NAME}-${CONTAINER_ID}"
 
-echo "Container ID: $CONTAINER_ID"
-
 # Create a root directory symlink to get a different Docker instance id hash
-ROOT_DIR="/var/lib/github-runner-instance/$CONTAINER_ID"
-ln -s "$PWD" "$ROOT_DIR"
-cd "$ROOT_DIR"
+ROOT_DIR="/var/lib/github-runner/$CONTAINER_ID"
+
+echo "Moving runner root directory to $ROOT_DIR"
+mkdir $ROOT_DIR
+mv /var/lib/github-runner/_template/* $ROOT_DIR
+cd $ROOT_DIR
 
 echo "Connecting to GitHub org: $GH_OWNER"
 echo "Runner name: $RUNNER_NAME"
