@@ -3,7 +3,7 @@
 GH_OWNER=$GH_OWNER
 GH_TOKEN=$GH_TOKEN
 
-export CONTAINER_ID=$(head -1 /proc/self/cgroup | cut -d/ -f3 | cut -c1-5)
+export CONTAINER_ID=$(cat /proc/self/mountinfo | grep "/docker/containers/" | head -1 | awk '{print $4}' | sed 's/\/var\/lib\/docker\/containers\///g' | sed 's/\/resolv.conf//g' | cut -c1-5)
 export RUNNER_NAME="${RUNNER_NAME}-${CONTAINER_ID}"
 
 echo "Container ID: $CONTAINER_ID"
