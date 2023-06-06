@@ -2,12 +2,13 @@ version: "3.7"
 services:
   github-runner:
     build: .
-    image: homecentr/github-runner
+    image: homecentr/github-runner:local
     restart: unless-stopped
     environment:
       GH_OWNER: homecentr
       GH_TOKEN: ${GH_TOKEN}
       RUNNER_NAME: "Test runner"
-      RUNNER_DIR: "/var/lib/github-runner/runner1"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
