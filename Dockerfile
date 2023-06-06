@@ -1,4 +1,4 @@
-FROM node:18-bullseye
+FROM node:20-bullseye
 
 ARG RUNNER_VERSION="2.304.0"
 
