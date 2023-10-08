@@ -4,22 +4,25 @@ GH_OWNER=$GH_OWNER
 GH_TOKEN=$GH_TOKEN
 
 export CONTAINER_ID=$(cat /proc/self/mountinfo | grep "/docker/containers/" | head -1 | awk '{print $4}' | sed 's/\/var\/lib\/docker\/containers\///g' | sed 's/\/resolv.conf//g' | cut -c1-5)
-export RUNNER_NAME="${RUNNER_NAME}-${CONTAINER_ID}"
+export FULL_RUNNER_NAME="${RUNNER_NAME}-${CONTAINER_ID}"
 
-# Create a root directory symlink to get a different Docker instance id hash
-ROOT_DIR="/var/lib/github-runner/$CONTAINER_ID"
+# Create a root directory with different name to get a different Docker instance id hash
+ROOT_DIR="/var/lib/github-runner/$CONTAINER_ID/" # TODO: Test ?
 
-echo "Moving runner root directory to $ROOT_DIR"
-mkdir $ROOT_DIR
-mv /var/lib/github-runner/_template/* $ROOT_DIR
+echo "Creating root directory to $ROOT_DIR..."
+mkdir -p $ROOT_DIR
+
+echo "Moving runner root directory to $ROOT_DIR..."
+find /var/lib/github-runner/_template -maxdepth 1 -mindepth 1 | xargs -I '{}' mv '{}' "$ROOT_DIR"
 cd $ROOT_DIR
 
+
 echo "Connecting to GitHub org: $GH_OWNER"
-echo "Runner name: $RUNNER_NAME"
+echo "Runner name: $FULL_RUNNER_NAME"
 
 REG_TOKEN=$(curl -sX POST -H "Accept: application/vnd.github.v3+json" -H "Authorization: token ${GH_TOKEN}" https://api.github.com/orgs/${GH_OWNER}/actions/runners/registration-token | jq .token --raw-output)
 
-./config.sh --unattended --url "https://github.com/${GH_OWNER}" --token "${REG_TOKEN}" --name "${RUNNER_NAME}"
+./config.sh --unattended --url "https://github.com/${GH_OWNER}" --token "${REG_TOKEN}" --name "${FULL_RUNNER_NAME}"
 
 cleanup() {
     echo "Removing runner..."
