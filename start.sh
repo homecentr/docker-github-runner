@@ -13,9 +13,8 @@ echo "Creating root directory to $ROOT_DIR..."
 mkdir -p $ROOT_DIR
 
 echo "Moving runner root directory to $ROOT_DIR..."
-find /var/lib/github-runner/_template -maxdepth 1 -mindepth 1 | xargs -I '{}' mv '{}' "$ROOT_DIR"
+find /var/lib/github-runner/_template -maxdepth 1 -mindepth 1 | xargs -I '{}' cp -R '{}' "$ROOT_DIR"
 cd $ROOT_DIR
-
 
 echo "Connecting to GitHub org: $GH_OWNER"
 echo "Runner name: $FULL_RUNNER_NAME"
