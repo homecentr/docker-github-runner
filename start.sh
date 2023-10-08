@@ -7,7 +7,7 @@ export CONTAINER_ID=$(cat /proc/self/mountinfo | grep "/docker/containers/" | he
 export FULL_RUNNER_NAME="${RUNNER_NAME}-${CONTAINER_ID}"
 
 # Create a root directory with different name to get a different Docker instance id hash
-ROOT_DIR="/var/lib/github-runner/$CONTAINER_ID/" # TODO: Test ?
+ROOT_DIR="/var/lib/github-runner/$CONTAINER_ID/"
 
 echo "Creating root directory to $ROOT_DIR..."
 mkdir -p $ROOT_DIR
